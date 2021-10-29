@@ -250,14 +250,14 @@ export class Helpers {
   }
 
   public async startEnvironment() {
-    await this.elementClick('.btn i[ngbtooltip="Start server"]');
+    await this.elementClick('.btn[ngbtooltip="Start server"]');
     await this.waitElementExist(
       '.environments-menu .menu-list .nav-item .nav-link.active.running'
     );
   }
 
   public async stopEnvironment() {
-    await this.elementClick('.btn i[ngbtooltip="Stop server"]');
+    await this.elementClick('.btn[ngbtooltip="Stop server"]');
     await this.waitElementExist(
       '.environments-menu .menu-list .nav-item .nav-link.active.running',
       true
@@ -265,7 +265,7 @@ export class Helpers {
   }
 
   public async restartEnvironment() {
-    await this.elementClick('.btn i[ngbtooltip="Server needs restart"]');
+    await this.elementClick('.btn[ngbtooltip="Server needs restart"]');
     await this.waitElementExist(
       '.environments-menu .menu-list .nav-item .nav-link.active.running'
     );
@@ -647,8 +647,8 @@ export class Helpers {
     inverted = false
   ) {
     await this.waitElementExist(
-      `.environment-logs-column:nth-child(1) .menu-list .nav-item:nth-child(${logIndex}) .nav-link i[ngbTooltip="${
-        icon === 'PROXY' ? 'Request proxied' : 'Request caught'
+      `.environment-logs-column:nth-child(1) .menu-list .nav-item:nth-child(${logIndex}) .nav-link app-svg[icon="${
+        icon === 'PROXY' ? 'security' : 'check'
       }"]`,
       inverted
     );
