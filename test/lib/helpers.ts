@@ -362,6 +362,7 @@ export class Helpers {
     await this.elementClick(
       `.header .nav .nav-item:nth-child(${tabIndexes[viewName]}) .nav-link`
     );
+    await this.testsInstance.app.client.pause(100);
   }
 
   public async switchTab(tabName: TabsNameType) {
