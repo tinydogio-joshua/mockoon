@@ -20,10 +20,10 @@ import { Settings } from 'src/shared/models/settings.model';
 
 export type ViewsNameType =
   | 'ENV_ROUTES'
-  | 'ENV_PROXY'
   | 'ENV_HEADERS'
-  | 'ENV_SETTINGS'
-  | 'ENV_LOGS';
+  | 'ENV_LOGS'
+  | 'ENV_PROXY'
+  | 'ENV_SETTINGS';
 
 export type TabsNameType = 'RESPONSE' | 'HEADERS' | 'RULES' | 'SETTINGS';
 

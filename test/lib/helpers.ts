@@ -350,16 +350,17 @@ export class Helpers {
     }
   }
 
-  public async switchViewInHeader(
-    viewName: Exclude<ViewsNameType, 'ENV_ROUTES'>
-  ) {
-    const selectors: { [key in typeof viewName]: string } = {
-      ENV_LOGS: 'Environment logs',
-      ENV_SETTINGS: 'Environment settings'
+  public async switchViewInHeader(viewName: ViewsNameType) {
+    const tabIndexes = {
+      ENV_ROUTES: 0,
+      ENV_HEADERS: 1,
+      ENV_LOGS: 2,
+      ENV_PROXY: 3,
+      ENV_SETTINGS: 4
     };
 
     await this.elementClick(
-      `.header .btn[ngbTooltip="${selectors[viewName]}"]`
+      `.header .nav .nav-item:nth-child(${tabIndexes[viewName]}) .nav-link`
     );
   }
 
