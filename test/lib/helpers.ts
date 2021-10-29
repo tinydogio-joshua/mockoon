@@ -350,7 +350,9 @@ export class Helpers {
     }
   }
 
-  public async switchViewInHeader(viewName: Exclude<ViewsNameType, 'ROUTE'>) {
+  public async switchViewInHeader(
+    viewName: Exclude<ViewsNameType, 'ENV_ROUTES'>
+  ) {
     const selectors: { [key in typeof viewName]: string } = {
       ENV_LOGS: 'Environment logs',
       ENV_SETTINGS: 'Environment settings'
@@ -712,8 +714,8 @@ export class Helpers {
     location:
       | 'route-response-headers'
       | 'environment-headers'
-      | 'proxy-req-headers'
-      | 'proxy-res-headers',
+      | 'env-proxy-req-headers'
+      | 'env-proxy-res-headers',
     header: Header
   ) {
     const headersComponentSelector = `app-headers-list#${location}`;
@@ -755,7 +757,7 @@ export class Helpers {
   }
 
   public async toggleDisableTemplating() {
-    await this.elementClick("label[for='disableTemplating']");
+    await this.elementClick("label[for='route-settings-disable-templating']");
   }
 
   public async assertRulesOperatorPresence(inverted = false) {

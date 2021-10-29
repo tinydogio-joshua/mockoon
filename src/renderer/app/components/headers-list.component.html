@@ -27,8 +27,8 @@
                 class="input-group-text p-1 text-danger"
                 (click)="removeHeader(headerIndex)"
                 ngbTooltip="Remove"
-                ><i class="material-icons">delete</i></span
-              >
+                ><app-svg icon="delete"></app-svg
+              ></span>
             </div>
             <div
               class="input-group-prepend"
@@ -37,8 +37,8 @@
               <span
                 class="input-group-text p-1 text-warning"
                 ngbTooltip="Header key contains prohibited characters and won't be used"
-                ><i class="material-icons">warning</i></span
-              >
+                ><app-svg icon="warning"></app-svg
+              ></span>
             </div>
             <div
               class="input-group-prepend"
@@ -52,19 +52,30 @@
               <span
                 class="input-group-text p-1 text-warning"
                 ngbTooltip="Headers with empty name or value are ignored"
-                ><i class="material-icons">warning</i></span
-              >
+                ><app-svg icon="warning"></app-svg
+              ></span>
             </div>
           </div>
         </div>
       </div>
-      <button
-        type="button"
-        class="btn btn-link btn-icon mt-2"
-        (click)="addHeader()"
-      >
-        <i class="material-icons text-success">add_box</i> Add header
-      </button>
+      <div class="d-flex justify-content-between">
+        <button
+          type="button"
+          class="btn btn-link btn-icon mt-2"
+          (click)="addHeader()"
+        >
+          <app-svg icon="add_box" class="text-success pr-2"></app-svg>
+          Add header
+        </button>
+        <button
+          *ngIf="secondaryButton"
+          type="button"
+          class="btn btn-link btn-icon mt-2 text-primary settings-add-cors"
+          (click)="secondaryButtonClicked.emit()"
+        >
+          {{ secondaryButton }}
+        </button>
+      </div>
     </ng-container>
   </ng-container>
 </ng-container>

@@ -9,17 +9,15 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
-  CORSHeaders,
   Environment,
   Environments,
   GetRouteResponseContentType,
   Header,
-  IsValidURL,
   MimeTypesWithTemplating,
   Route,
   RouteResponse
 } from '@mockoon/commons';
-import { from, merge, Observable, Subject } from 'rxjs';
+import { from, merge, Observable } from 'rxjs';
 import {
   distinctUntilChanged,
   distinctUntilKeyChanged,
@@ -45,7 +43,6 @@ import {
 } from 'src/renderer/app/constants/routes.constants';
 import { AnalyticsEvents } from 'src/renderer/app/enums/analytics-events.enum';
 import { FocusableInputs } from 'src/renderer/app/enums/ui.enum';
-import { HeadersProperties } from 'src/renderer/app/models/common.model';
 import { ContextMenuItemPayload } from 'src/renderer/app/models/context-menu.model';
 import { DataSubject } from 'src/renderer/app/models/data.model';
 import {
@@ -64,11 +61,7 @@ import { SettingsService } from 'src/renderer/app/services/settings.service';
 import { TelemetryService } from 'src/renderer/app/services/telemetry.service';
 import { ToastsService } from 'src/renderer/app/services/toasts.service';
 import { UIService } from 'src/renderer/app/services/ui.service';
-import {
-  clearLogsAction,
-  updateRouteAction
-} from 'src/renderer/app/stores/actions';
-import { ReducerDirectionType } from 'src/renderer/app/stores/reducer';
+import { updateRouteAction } from 'src/renderer/app/stores/actions';
 import {
   DuplicatedRoutesTypes,
   EnvironmentsStatuses,
@@ -89,7 +82,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('settingsModal')
   public settingsModal: SettingsModalComponent;
   public activeEnvironment$: Observable<Environment>;
-  public activeEnvironmentForm: FormGroup;
   public activeEnvironmentState$: Observable<EnvironmentStatus>;
   public activeRoute$: Observable<Route>;
   public activeRouteForm: FormGroup;
@@ -101,28 +93,22 @@ export class AppComponent implements OnInit, AfterViewInit {
   public activeRouteResponseForm: FormGroup;
   public activeRouteResponseIndex$: Observable<number>;
   public activeRouteResponseLastLog$: Observable<EnvironmentLog>;
-  public injectedHeaders$: Observable<Header[]>;
   public activeTab$: Observable<TabsNameType>;
   public activeView$: Observable<ViewsNameType>;
   public bodyEditorConfig$: Observable<any>;
-  public clearEnvironmentLogsRequested$ = new TimedBoolean(false, 4000);
   public deleteCurrentRouteResponseRequested$ = new TimedBoolean(false, 4000);
-  public duplicatedEnvironments$: Observable<Set<string>>;
   public duplicatedRoutes$: Observable<DuplicatedRoutesTypes>;
   public environments$: Observable<Environments>;
   public environmentsLogs$: Observable<EnvironmentLogs>;
   public environmentsStatus$: Observable<EnvironmentsStatuses>;
   public Infinity = Infinity;
-  public isValidURL = IsValidURL;
   public methods = Methods;
   public scrollToBottom = this.uiService.scrollToBottom;
   public statusCodes = StatusCodes;
   public toasts$: Observable<Toast[]>;
   public focusableInputs = FocusableInputs;
   public statusCodeValidation = StatusCodeValidation;
-  public hostnameTooltip$: Observable<string>;
   public os: string;
-  private injectHeaders$ = new Subject<Header[]>();
   private logger = new Logger('[COMPONENT][APP]');
 
   constructor(
@@ -165,7 +151,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.appQuitService.init().subscribe();
-    this.injectedHeaders$ = this.injectHeaders$.asObservable();
 
     this.logger.info('Initializing application');
 
@@ -208,20 +193,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.activeEnvironmentState$ = this.store.selectActiveEnvironmentStatus();
     this.environmentsStatus$ = this.store.select('environmentsStatus');
     this.bodyEditorConfig$ = this.store.select('bodyEditorConfig');
-    this.duplicatedEnvironments$ = this.store.select('duplicatedEnvironments');
     this.duplicatedRoutes$ = this.store.select('duplicatedRoutes');
     this.environmentsLogs$ = this.store.select('environmentsLogs');
     this.activeRouteResponseLastLog$ =
       this.store.selectActiveRouteResponseLastLog();
     this.toasts$ = this.store.select('toasts');
-    this.hostnameTooltip$ = this.activeEnvironment$.pipe(
-      filter((environment) => !!environment),
-      map((environment) =>
-        environment.hostname === '0.0.0.0'
-          ? 'Server available on all network interfaces (localhost, 127.0.0.1, etc)'
-          : `Server available on ${environment.hostname}`
-      )
-    );
 
     this.initFormValues();
   }
@@ -244,13 +220,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Toggle active environment running state (start/stop)
-   */
-  public toggleEnvironment() {
-    this.environmentsService.toggleActiveEnvironment();
-  }
-
-  /**
    * Set the application active tab
    */
   public setActiveTab(tabName: TabsNameType) {
@@ -258,28 +227,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Set the application active view
-   */
-  public setActiveView(viewName: ViewsNameType) {
-    this.environmentsService.setActiveView(viewName);
-  }
-
-  /**
    * Set the application active route response
    */
   public setActiveRouteResponse(routeResponseUUID: string) {
     this.environmentsService.setActiveRouteResponse(routeResponseUUID);
-  }
-
-  /**
-   * Clear logs for active environment
-   */
-  public clearEnvironmentLogs() {
-    if (this.clearEnvironmentLogsRequested$.readValue()) {
-      this.store.update(
-        clearLogsAction(this.store.get('activeEnvironmentUUID'))
-      );
-    }
   }
 
   /**
@@ -349,18 +300,6 @@ export class AppComponent implements OnInit, AfterViewInit {
    */
   public contextMenuItemClicked(payload: ContextMenuItemPayload) {
     switch (payload.action) {
-      case 'env_logs':
-        if (payload.subjectUUID !== this.store.get('activeEnvironmentUUID')) {
-          this.selectEnvironment(payload.subjectUUID);
-        }
-        this.setActiveView('ENV_LOGS');
-        break;
-      case 'env_settings':
-        if (payload.subjectUUID !== this.store.get('activeEnvironmentUUID')) {
-          this.selectEnvironment(payload.subjectUUID);
-        }
-        this.setActiveView('ENV_SETTINGS');
-        break;
       case 'duplicate':
         if (payload.subject === 'route') {
           this.environmentsService.duplicateRoute(payload.subjectUUID);
@@ -433,13 +372,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Add the CORS predefined headers to the environment headers
-   */
-  public addCORSHeadersToEnvironment() {
-    this.injectHeaders$.next(CORSHeaders);
-  }
-
-  /**
    * Get the route content type or the parent environment content type
    */
   public getRouteResponseContentType() {
@@ -490,22 +422,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Update the store when headers lists are updated
+   * Update the store when route headers list is updated
    */
-  public headersUpdated(
-    subject: 'environment' | 'routeResponse',
-    targetHeaders: HeadersProperties,
-    headers: Header[]
-  ) {
-    if (subject === 'environment') {
-      this.environmentsService.updateActiveEnvironment({
-        [targetHeaders]: headers
-      });
-    } else if (subject === 'routeResponse') {
-      this.environmentsService.updateActiveRouteResponse({
-        [targetHeaders]: headers
-      });
-    }
+  public routeHeadersUpdated(headers: Header[]) {
+    this.environmentsService.updateActiveRouteResponse({
+      headers
+    });
   }
 
   /**
@@ -576,19 +498,6 @@ export class AppComponent implements OnInit, AfterViewInit {
    * Init active environment and route forms, and subscribe to changes
    */
   private initForms() {
-    this.activeEnvironmentForm = this.formBuilder.group({
-      name: [''],
-      port: [''],
-      endpointPrefix: [''],
-      latency: [''],
-      proxyMode: [''],
-      proxyHost: [''],
-      proxyRemovePrefix: [''],
-      https: [''],
-      localhostOnly: [''],
-      cors: ['']
-    });
-
     this.activeRouteForm = this.formBuilder.group({
       documentation: [''],
       method: [''],
@@ -605,27 +514,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       rules: this.formBuilder.array([]),
       disableTemplating: [false],
       fallbackTo404: [false]
-    });
-
-    // send new activeEnvironmentForm values to the store, one by one
-    merge(
-      ...Object.keys(this.activeEnvironmentForm.controls).map((controlName) =>
-        this.activeEnvironmentForm.get(controlName).valueChanges.pipe(
-          map((newValue) => {
-            if (controlName === 'localhostOnly') {
-              return {
-                hostname: newValue === true ? '127.0.0.1' : '0.0.0.0'
-              };
-            }
-
-            return {
-              [controlName]: newValue
-            };
-          })
-        )
-      )
-    ).subscribe((newProperty) => {
-      this.environmentsService.updateActiveEnvironment(newProperty);
     });
 
     // send new activeRouteForm values to the store, one by one
@@ -655,30 +543,6 @@ export class AppComponent implements OnInit, AfterViewInit {
    * Listen to stores to init form values
    */
   private initFormValues() {
-    // subscribe to active environment changes to reset the form
-    this.activeEnvironment$
-      .pipe(
-        filter((environment) => !!environment),
-        distinctUntilKeyChanged('uuid')
-      )
-      .subscribe((activeEnvironment) => {
-        this.activeEnvironmentForm.setValue(
-          {
-            name: activeEnvironment.name,
-            port: activeEnvironment.port,
-            endpointPrefix: activeEnvironment.endpointPrefix,
-            latency: activeEnvironment.latency,
-            proxyMode: activeEnvironment.proxyMode,
-            proxyHost: activeEnvironment.proxyHost,
-            proxyRemovePrefix: activeEnvironment.proxyRemovePrefix,
-            https: activeEnvironment.https,
-            localhostOnly: activeEnvironment.hostname === '127.0.0.1',
-            cors: activeEnvironment.cors
-          },
-          { emitEvent: false }
-        );
-      });
-
     // subscribe to active route changes to reset the form
     this.activeRoute$
       .pipe(
@@ -722,15 +586,6 @@ export class AppComponent implements OnInit, AfterViewInit {
           { emitEvent: false }
         );
       });
-  }
-
-  /**
-   * Set the active environment
-   */
-  private selectEnvironment(
-    environmentUUIDOrDirection: string | ReducerDirectionType
-  ) {
-    this.environmentsService.setActiveEnvironment(environmentUUIDOrDirection);
   }
 
   /**

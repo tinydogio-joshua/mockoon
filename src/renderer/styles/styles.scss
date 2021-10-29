@@ -1,5 +1,4 @@
 @import './boostrap-overrides.scss';
-@import './fonts.scss';
 @import './animations.scss';
 
 // custom scrollbar
@@ -117,19 +116,24 @@ input,
   overflow-y: scroll;
 }
 
-.doc-link {
+.cp {
   cursor: pointer;
-  opacity: 0.5;
-  padding: 0;
-  vertical-align: baseline;
-
-  &:hover {
-    opacity: 1;
-  }
 }
 
 .cursor-grab {
   cursor: grab;
+}
+
+.invisible-input {
+  color: inherit;
+  background-color: transparent;
+  border: none;
+  outline: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  height: inherit;
+  width: 100%;
 }
 
 // http methods badges
@@ -155,10 +159,6 @@ $http-methods-light: ('get', lighten($blue, 10%)),
 
 .header {
   background-color: lighten($gray-900, 3%);
-}
-
-.position-relative {
-  position: relative;
 }
 
 .flex-fill {

@@ -76,22 +76,22 @@ describe('Proxy (with TLS and proxy headers)', () => {
       value: 'header value'
     });
 
-    await tests.helpers.addHeader('proxy-req-headers', {
+    await tests.helpers.addHeader('env-proxy-req-headers', {
       key: 'x-proxy-request-header',
       value: 'header value'
     });
 
-    await tests.helpers.addHeader('proxy-res-headers', {
+    await tests.helpers.addHeader('env-proxy-res-headers', {
       key: 'x-proxy-response-header',
       value: 'header value'
     });
 
-    await tests.helpers.addHeader('proxy-res-headers', {
+    await tests.helpers.addHeader('env-proxy-res-headers', {
       key: 'Set-Cookie',
       value: 'cookie1=cookievalue1'
     });
 
-    await tests.helpers.addHeader('proxy-res-headers', {
+    await tests.helpers.addHeader('env-proxy-res-headers', {
       key: 'Set-Cookie',
       value: 'cookie2=cookievalue2'
     });

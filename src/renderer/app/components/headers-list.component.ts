@@ -29,6 +29,8 @@ import {
   headerValues
 } from 'src/renderer/app/constants/routes.constants';
 import { HeadersProperties } from 'src/renderer/app/models/common.model';
+import { DataSubject } from 'src/renderer/app/models/data.model';
+import { EventsService } from 'src/renderer/app/services/events.service';
 
 @Component({
   selector: 'app-headers-list',
@@ -41,11 +43,15 @@ export class HeadersListComponent implements OnInit, OnDestroy {
   @Input()
   public headersPropertyName: HeadersProperties;
   @Input()
-  public injectedHeaders$: Observable<Header[]>;
+  public secondaryButton: string;
   @Output()
   public headerAdded = new EventEmitter<any>();
+  @Input()
+  public dataSubject: DataSubject;
   @Output()
   public headersUpdated = new EventEmitter<Header[]>();
+  @Output()
+  public secondaryButtonClicked = new EventEmitter();
   public dataSubject$: Observable<RouteResponse | Environment>;
   public form: FormGroup;
   public testHeaderValidity = TestHeaderValidity;
@@ -58,7 +64,10 @@ export class HeadersListComponent implements OnInit, OnDestroy {
     return this.form.get('headers') as FormArray;
   }
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private eventsService: EventsService
+  ) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({
@@ -75,17 +84,17 @@ export class HeadersListComponent implements OnInit, OnDestroy {
     );
 
     // subscribe to header injection observable
-    if (this.injectedHeaders$) {
-      this.injectedHeaders$
-        .pipe(
-          filter((headers) => !!headers && headers.length > 0),
-          tap((headers) => {
-            this.injectHeaders(headers);
-          }),
-          takeUntil(this.destroy$)
-        )
-        .subscribe();
-    }
+    this.eventsService.injectHeaders$
+      .pipe(
+        filter(
+          (injectedPayload) => injectedPayload.dataSubject === this.dataSubject
+        ),
+        tap((injectedPayload) => {
+          this.injectHeaders(injectedPayload.headers);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe();
 
     // subscribe to changes and send new headers values to the store
     this.form.valueChanges

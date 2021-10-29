@@ -3,12 +3,11 @@
     <div class="modal-header">
       <h4 class="modal-title">Settings</h4>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" [formGroup]="settingsForm">
       <app-title-separator
         heading="User interface"
         [isFirst]="true"
         icon="web_asset"
-        iconClasses="text-primary"
       ></app-title-separator>
 
       <div class="pl-3">
@@ -17,12 +16,12 @@
             <input
               type="checkbox"
               class="custom-control-input"
-              id="truncate-route-name"
-              name="truncateRouteName"
-              [ngModel]="settings.truncateRouteName"
-              (ngModelChange)="settingsUpdated($event, 'truncateRouteName')"
+              id="settings-truncate-route-name"
+              formControlName="truncateRouteName"
             />
-            <label class="custom-control-label" for="truncate-route-name"
+            <label
+              class="custom-control-label"
+              for="settings-truncate-route-name"
               >Truncate long route paths in routes list</label
             >
           </div>
@@ -33,54 +32,46 @@
         heading="Environment logs"
         [isFirst]="true"
         icon="history"
-        iconClasses="text-primary"
       ></app-title-separator>
 
       <div class="pl-3">
         <div class="form-group">
           <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text pl-0"
-                >Maximum log entries (per environment):</span
-              >
-            </div>
+            <label for="settings-log-max-count" class="col-form-label pr-2">
+              Maximum log entries (per environment)
+            </label>
             <input
               type="number"
               class="form-control col-1"
-              id="log-max-count"
+              id="settings-log-max-count"
               [appInputNumber]="{ min: 1, max: Infinity, canBeEmpty: false }"
-              [ngModel]="settings.maxLogsPerEnvironment"
-              (ngModelChange)="settingsUpdated($event, 'maxLogsPerEnvironment')"
+              formControlName="maxLogsPerEnvironment"
             />
-            <div class="input-group-prepend">
-              <span class="input-group-text pl-0">&nbsp;logs</span>
-            </div>
           </div>
         </div>
         <div class="form-group">
           <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text pl-0">Log's body size:</span>
-            </div>
+            <label for="settings-log-body-size" class="col-form-label pr-2">
+              Log's body maximum characters size
+            </label>
             <input
               type="number"
-              class="form-control col-2"
-              id="log-body-size"
+              class="form-control col-1"
+              id="settings-log-body-size"
               [appInputNumber]="{ min: 1, max: Infinity, canBeEmpty: false }"
               placeholder="10000 (default)"
-              [ngModel]="settings.logSizeLimit"
-              (ngModelChange)="settingsUpdated($event, 'logSizeLimit')"
+              formControlName="logSizeLimit"
             />
-            <div class="input-group-prepend">
-              <span class="input-group-text pl-0">&nbsp;characters</span>
+            <div class="input-group-append ml-1 align-items-center">
+              <app-svg
+                icon="info"
+                class="ml-1"
+                ngbTooltip="Truncate the entering requests and exiting responses bodies if bigger than {{
+                  settings.logSizeLimit
+                }} characters"
+              ></app-svg>
             </div>
           </div>
-          <p class="text-muted">
-            <small
-              >Truncate the entering requests and exiting responses bodies if
-              bigger than {{ settings.logSizeLimit }} characters.</small
-            >
-          </p>
         </div>
       </div>
 
@@ -88,21 +79,19 @@
         heading="Faker.js"
         subheading="Templating system supports Faker.js"
         icon="code"
-        iconClasses="text-primary"
         docLink="templating"
       ></app-title-separator>
 
       <div class="pl-3">
         <div class="form-group">
           <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text pl-0">Locale:</span>
-            </div>
+            <label for="settings-faker-locale" class="col-form-label pr-2">
+              Locale
+            </label>
             <select
               class="custom-select col-2"
-              id="faker-locale"
-              [ngModel]="settings.fakerLocale"
-              (ngModelChange)="settingsUpdated($event, 'fakerLocale')"
+              id="settings-faker-locale"
+              formControlName="fakerLocale"
             >
               <option
                 *ngFor="let fakerLocale of fakerLocales"
@@ -112,44 +101,41 @@
                 {{ fakerLocale.label }}
               </option>
             </select>
+            <div class="input-group-append ml-1 align-items-center">
+              <app-svg
+                icon="info"
+                class="ml-1"
+                ngbTooltip="Set Faker.js's primary locale. Faker.js will fallback to English for helpers not covered by this locale"
+              ></app-svg>
+            </div>
           </div>
-          <p class="text-muted">
-            <small
-              >Set Faker.js's primary locale. Faker.js will fallback to
-              "English" for helpers not covered by this locale.</small
-            >
-          </p>
         </div>
 
         <div class="form-group">
           <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text pl-0">Seed:</span>
-            </div>
+            <label for="settings-faker-seed" class="col-form-label pr-2">
+              Seed
+            </label>
             <input
               type="number"
               class="form-control col-4"
-              id="faker-seed"
+              id="settings-faker-seed"
               placeholder="Number or empty for no seed"
               [appInputNumber]="{ min: 0, max: Infinity, canBeEmpty: true }"
-              [ngModel]="settings.fakerSeed"
-              (ngModelChange)="settingsUpdated($event, 'fakerSeed')"
+              formControlName="fakerSeed"
             />
+            <div class="input-group-append ml-1 align-items-center">
+              <app-svg
+                icon="info"
+                class="ml-1"
+                ngbTooltip="By setting a seed, Faker.js will always generate the same data. Application must be restarted after removing the seed"
+              ></app-svg>
+            </div>
           </div>
-          <p class="text-muted">
-            <small
-              >By setting a seed, Faker.js will always generate the same data.
-              Application must be restarted after removing the seed.</small
-            >
-          </p>
         </div>
       </div>
 
-      <app-title-separator
-        heading="Storage"
-        icon="save"
-        iconClasses="text-primary"
-      ></app-title-separator>
+      <app-title-separator heading="Storage" icon="save"></app-title-separator>
 
       <div class="pl-3">
         <div class="form-group">
@@ -157,12 +143,12 @@
             <input
               type="checkbox"
               class="custom-control-input"
-              id="storage-pretty-print"
-              name="storagePrettyPrint"
-              [ngModel]="settings.storagePrettyPrint"
-              (ngModelChange)="settingsUpdated($event, 'storagePrettyPrint')"
+              id="settings-storage-pretty-print"
+              formControlName="storagePrettyPrint"
             />
-            <label class="custom-control-label" for="storage-pretty-print"
+            <label
+              class="custom-control-label"
+              for="settings-storage-pretty-print"
               >pretty print JSON storage files (settings and
               environments)</label
             >
@@ -173,59 +159,58 @@
       <app-title-separator
         heading="Analytics & telemetry"
         icon="show_chart"
-        iconClasses="text-primary"
       ></app-title-separator>
 
       <div class="pl-3">
         <div class="form-group">
-          <div class="custom-control custom-checkbox">
-            <input
-              type="checkbox"
-              class="custom-control-input"
-              id="analytics"
-              name="analytics"
-              [ngModel]="settings.analytics"
-              (ngModelChange)="settingsUpdated($event, 'analytics')"
-            />
-            <label class="custom-control-label" for="analytics"
-              >I agree to share anonymous usage data</label
-            >
+          <div class="input-group">
+            <div class="custom-control custom-checkbox">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="settings-analytics"
+                formControlName="analytics"
+              />
+              <label class="custom-control-label" for="settings-analytics"
+                >I agree to share anonymous usage data
+              </label>
+            </div>
+            <div class="input-group-append ml-1">
+              <app-svg
+                icon="info"
+                class="ml-1"
+                ngbTooltip="We are using a basic Google Analytics setup, none of your data/content is kept anywhere and it helps us improve Mockoon"
+              ></app-svg>
+            </div>
           </div>
-          <p class="text-muted">
-            <small
-              >We are using a basic Google Analytics setup, none of your
-              data/content is kept anywhere and it helps us improve Mockoon
-              :)</small
-            >
-          </p>
         </div>
       </div>
 
       <div class="pl-3">
         <div class="form-group">
-          <div class="custom-control custom-checkbox">
-            <input
-              type="checkbox"
-              class="custom-control-input"
-              id="enableTelemetry"
-              name="enableTelemetry"
-              [ngModel]="settings.enableTelemetry"
-              (ngModelChange)="settingsUpdated($event, 'enableTelemetry')"
-            />
-            <label class="custom-control-label" for="enableTelemetry"
-              >Enable telemetry (restart needed)</label
-            >
+          <div class="input-group">
+            <div class="custom-control custom-checkbox">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="settings-enable-telemetry"
+                formControlName="enableTelemetry"
+              />
+              <label
+                class="custom-control-label"
+                for="settings-enable-telemetry"
+                >Enable telemetry (restart needed)
+              </label>
+            </div>
+            <div class="input-group-append ml-1">
+              <app-svg
+                icon="info"
+                class="text-primary cp"
+                ngbTooltip="Our custom telemetry system is collecting a minimal amount of information and no personal data. Read more in our FAQ"
+                (click)="openWikiLink('faq', $event)"
+              ></app-svg>
+            </div>
           </div>
-          <p class="text-muted">
-            <small
-              >Our custom telemetry system is collecting a minimal amount of
-              information and no personal data. Read more in our FAQ<span
-                (click)="openWikiLink('faq')"
-                class="pl-2 btn btn-link text-primary cp doc-link"
-                ><i class="material-icons">info</i></span
-              ></small
-            >
-          </p>
         </div>
       </div>
     </div>

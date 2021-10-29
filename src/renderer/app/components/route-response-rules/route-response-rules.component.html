@@ -134,8 +134,8 @@
                   class="input-group-text p-1 text-danger"
                   (click)="removeRule(ruleIndex)"
                   ngbTooltip="Remove"
-                  ><i class="material-icons">delete</i></span
-                >
+                  ><app-svg icon="delete"></app-svg
+                ></span>
               </div>
 
               <div
@@ -145,7 +145,7 @@
                 cdkDragHandle
               >
                 <span class="input-group-text p-1 cursor-grab text-muted">
-                  <i class="material-icons">drag_indicator</i>
+                  <app-svg icon="drag_indicator"></app-svg>
                 </span>
               </div>
             </div>
@@ -155,7 +155,8 @@
     </div>
     <div class="d-flex align-items-center mt-2">
       <button type="button" class="btn btn-link btn-icon" (click)="addRule()">
-        <i class="material-icons text-success">add_box</i> Add rule
+        <app-svg icon="add_box" class="text-success pr-2"></app-svg>
+        Add rule
       </button>
       <ng-container *ngIf="activeRoute$ | async as activeRoute">
         <div

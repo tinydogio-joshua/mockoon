@@ -275,14 +275,14 @@ describe('UI interactions', () => {
       },
       {
         description: 'should use the typeahead in the proxy request headers',
-        headers: 'proxy-req-headers',
+        headers: 'env-proxy-req-headers',
         preHook: async () => {
           await tests.helpers.switchViewInHeader('ENV_SETTINGS');
         }
       },
       {
         description: 'should use the typeahead in the proxy response headers',
-        headers: 'proxy-res-headers',
+        headers: 'env-proxy-res-headers',
         preHook: async () => {
           await tests.helpers.switchViewInHeader('ENV_SETTINGS');
         }

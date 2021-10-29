@@ -5,7 +5,7 @@
     [ngbTooltip]="iconTooltip"
     (click)="iconClick()"
   >
-    <i class="material-icons">{{ icon }}</i>
+    <app-svg [icon]="icon"></app-svg>
   </div>
   <div class="title-separator-text">
     <div>
@@ -17,10 +17,10 @@
       <ng-content select="[subheading]"></ng-content>
       <span
         *ngIf="docLink"
-        class="pl-2 btn btn-link text-primary cp doc-link"
+        class="pl-2 btn btn-link text-primary p-0 cp"
         (click)="linkClick()"
       >
-        <i class="material-icons">info</i>
+        <app-svg icon="info"></app-svg>
       </span>
     </div>
   </div>
